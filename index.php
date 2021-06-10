@@ -152,7 +152,7 @@
 <body>
 
     <header class="system_bar">
-        <h1>Sort</h1>
+        <h1>Sort - Finde die richtige Reihenfolge</h1>
     </header>
     <content>
         <div class="items"></div>
@@ -161,7 +161,7 @@
         <div>
             © <?php echo date("Y"); ?> <a target="_blank" href="https://shortdevelopment.github.io/">@ShortDevelopment</a>
             |
-            <a href="">OpenSource</a>
+            <a target="_blank" href="https://github.com/ShortDevelopment/ClassRoom-Sort">OpenSource</a>
         </div>
     </footer>
 
@@ -190,15 +190,16 @@
 
                 ele.style.borderColor = "";
 
-                let topBorderCorrect = false;
-                let bottomBorderCorrect = false;
+                let topBorderCorrect = -1;
+                let bottomBorderCorrect = -1;
 
                 if (index != 0) {
                     if (DragBaseData[index2 - 1] == items[index - 1].textContent) {
                         ele.style.borderTopColor = "var(--color-correct)";
-                        topBorderCorrect = true;
+                        topBorderCorrect = 1;
                     } else {
                         ele.style.borderTopColor = "var(--color-wrong)";
+                        topBorderCorrect = 0;
                         wrongBorderCount++;
                     }
                 }
@@ -206,15 +207,18 @@
                 if (index != items.length - 1) {
                     if (DragBaseData[index2 + 1] == items[index + 1].textContent) {
                         ele.style.borderBottomColor = "var(--color-correct)";
-                        bottomBorderCorrect = true;
+                        bottomBorderCorrect = 1;
                     } else {
                         ele.style.borderBottomColor = "var(--color-wrong)";
+                        bottomBorderCorrect = 0;
                         wrongBorderCount++;
                     }
                 }
 
-                if (topBorderCorrect && bottomBorderCorrect) {
+                if (topBorderCorrect == 1 && bottomBorderCorrect == 1) {
                     ele.style.borderColor = "var(--color-correct)";
+                }else if (topBorderCorrect == 0 && bottomBorderCorrect == 0) {
+                    ele.style.borderColor = "var(--color-wrong)";
                 }
 
             });
@@ -228,7 +232,7 @@
 
     <style>
         :root {
-            --drag-item-margin: 15px;
+            --drag-item-margin: 25px;
             --drag-item-min-height: 15px;
             --drag-item-border-radius: 5px;
             --color-correct: green;
@@ -247,21 +251,36 @@
             padding: 5px 10px;
             box-sizing: border-box;
             min-height: 30px;
-            border: 4px dashed lightgray;
+            border: 4px dashed rgba(0, 0, 0, 0.3);
             background: white;
             cursor: grab;
         }
 
         .drag_target {
-            height: var(--drag-item-margin);
+            min-height: var(--drag-item-margin);
             background: transparent;
+            box-sizing: border-box;
         }
 
-            .drag_target[data-drag-enter] {
-                height: calc(var(--drag-item-margin) + var(--drag-item-min-height));
-                background: lightgray;
-                border-radius: var(--drag-item-border-radius);
+            .drag_target > div {
+                display: none;
+                pointer-events: none;
             }
+
+            .drag_target[data-drag-enter] {
+                border-radius: var(--drag-item-border-radius);
+                padding: 10px 0px;
+            }
+
+                .drag_target[data-drag-enter] > div {
+                    display: block;
+                    border-color: rgba(0, 0, 0, 0.1);
+                    border-radius: var(--drag-item-border-radius);
+                    padding: 5px 10px;
+                    box-sizing: border-box;
+                    min-height: 30px;
+                    border: 4px dashed rgba(0, 0, 0, 0.1);
+                }
     </style>
 
     <template id="template_drag_item">
@@ -280,7 +299,9 @@
     </script>
 
     <template id="template_drag_target">
-        <div class="drag drag_target" ondragover="event.preventDefault();" ondragenter="this.setAttribute('data-drag-enter', '');" ondragleave="this.removeAttribute('data-drag-enter');" ondrop="DragTargetDrop(this, event);"></div>
+        <div class="drag drag_target" ondragover="event.preventDefault();" ondragenter="this.setAttribute('data-drag-enter', '');" ondragleave="this.removeAttribute('data-drag-enter');" ondrop="DragTargetDrop(this, event);">
+            <div></div>
+        </div>
     </template>
 
     <script>
